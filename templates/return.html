@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Return Product - Face Recognition</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        input[type="file"],
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        #video {
+            display: none;
+            width: 300px;
+            margin: 10px auto;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<h1>Return Product using Face Recognition</h1>
+<div class="upload-section">
+    <input type="file" id="imageUpload" accept="image/*"><br>
+    <button onclick="startCamera()">📸 Use Camera</button>
+    <video id="video" autoplay></video><br>
+    <button onclick="captureImage()">Capture & Submit</button>
+    <canvas id="canvas" width="300" height="225"></canvas><br>
+    <button onclick="submitImage()">Submit Image</button><br>
+    <button onclick="goToResults()">🔍 View Last Return Result</button>
+    <div id="result"></div>
+</div>
+
+    <script>
+    function goToResults() {
+        window.location.href = "return_result.html";
+    }
+
+        let imageBase64 = null;
+
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                imageBase64 = reader.result;
+            };
+            if (file) reader.readAsDataURL(file);
+        });
+
+        function startCamera() {
+            const video = document.getElementById('video');
+            video.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => video.srcObject = stream)
+                .catch(err => alert('Error accessing camera: ' + err));
+        }
+
+        function captureImage() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            imageBase64 = canvas.toDataURL("image/jpeg");
+        }
+
+            function submitImage() {
+        if (!imageBase64) {
+            alert("Please upload or capture an image first.");
+            return;
+        }
+
+        fetch("http://localhost:5000/api/return", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ image: imageBase64 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                console.log("came her")
+                // Encode the full purchase data in the URL or use sessionStorage
+                sessionStorage.setItem("return_data", JSON.stringify(data));
+                window.location.href = "return_result.html";
+            } else {
+                document.getElementById("result").innerText = "❌ " + data.message;
+            }
+        })
+        .catch(err => {
+            document.getElementById("result").innerText = "❌ Error: " + err;
+        });
+    }
+
+    </script>
+</body>
+</html>

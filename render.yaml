@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: return-without-receipt
+    env: python
+    buildCommand: ""
+    startCommand: python server.py
+    envVars:
+      - key: POSTGRES_URL
+        value: postgres://neondb_owner:npg_I5osNcmpD3qL@ep-weathered-flower-a5bj9csu-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Return Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #e3f2fd;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #0277bd;
+            margin-bottom: 20px;
+        }
+
+        .purchase {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f1f8e9;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .purchase h4 {
+            margin: 0 0 10px;
+            color: #388e3c;
+        }
+
+        .purchase ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="result-box">
+    <a href="return.html">
+        <button style="background-color: #0277bd; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 20px;">
+            🔄 Go Back to Return Page
+        </button>
+    </a>
+    
+    <h2>Matched User Purchases</h2>
+    <img id="user-image" src="" alt="Matched Face" style="max-width: 150px; border-radius: 50%; margin: 20px auto;">
+    <div id="purchases-container"></div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("http://localhost:5000/api/return_result")
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || !data.purchases) {
+                document.getElementById("purchases-container").innerText = "No return data found.";
+                return;
+            }
+
+            document.getElementById("user-image").src = data.photo_url;
+
+            const container = document.getElementById("purchases-container");
+            data.purchases.forEach(purchase => {
+                const div = document.createElement("div");
+                div.className = "purchase";
+
+                let itemsList = "<ul>";
+                purchase.items.forEach(item => {
+                    itemsList += `<li>${item.name} - $${item.price}</li>`;
+                });
+                itemsList += "</ul>";
+
+                div.innerHTML = `
+                    <h4>Purchase ID: ${purchase.id}</h4>
+                    <strong>Date:</strong> ${new Date(purchase.timestamp).toLocaleString()}<br>
+                    <strong>Total:</strong> $${purchase.total.toFixed(2)}
+                    ${itemsList}
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            document.getElementById("purchases-container").innerText = "❌ Error fetching data: " + err;
+        });
+});
+</script>
+</body>
+</html>

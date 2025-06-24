@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Products - Face Recognition Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .search-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-item:hover {
+            background: #f8f9ff;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .selected-items {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .selected-items h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+        }
+
+        .total-section {
+            border-top: 2px solid #e0e0e0;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .total-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .camera-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .camera-container {
+            margin-bottom: 20px;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 2px dashed #ccc;
+        }
+
+        .camera-btn, .buy-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .camera-btn:hover, .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-size: 1.2rem;
+            padding: 15px 40px;
+        }
+
+        .buy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Buy Products</h1>
+            <a href="index.html" class="back-btn">← Back to Home</a>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for products..." id="searchInput">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="camera-section">
+                <h2>Take Photo for Purchase</h2>
+                <div class="camera-container">
+                    <!-- Actual live video feed -->
+                    <video id="cameraPreview" autoplay playsinline width="300" height="225"></video>
+                    <!-- Captured image -->
+                    <canvas id="capturedImage" style="display: none;"></canvas>
+                    <button class="camera-btn" id="takePictureBtn">Take Picture</button>
+                </div>
+                <button class="buy-btn" id="buyBtn" disabled>Complete Purchase</button>
+            </div>
+
+            <div class="selected-items">
+                <h2>Selected Items</h2>
+                <div id="selectedItemsList">
+                    <div class="empty-cart">
+                        <p>No items selected yet</p>
+                        <p>Search and add products to your cart</p>
+                    </div>
+                </div>
+                <div class="total-section">
+                    <div class="total-amount">Total: $<span id="totalAmount">0.00</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sampleProducts = [];
+
+        async function fetchProductsFromBackend() {
+            try {
+                const response = await fetch("http://localhost:5000/api/products");
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    sampleProducts = data;
+                    console.log("✅ Products fetched:", sampleProducts);
+                    renderProducts(); // Optional if you want to show products by default
+                } else {
+                    console.error("❌ Unexpected response:", data);
+                }
+            } catch (error) {
+                console.error("❌ Failed to fetch products:", error);
+            }
+        }
+
+        window.onload = () => {
+            fetchProductsFromBackend();
+            startCamera();
+        };
+
+        let selectedItems = [];
+        let photoTaken = false;
+
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const selectedItemsList = document.getElementById('selectedItemsList');
+        const totalAmount = document.getElementById('totalAmount');
+        const takePictureBtn = document.getElementById('takePictureBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const video = document.getElementById("cameraPreview");
+        const canvas = document.getElementById("capturedImage");
+        let stream;
+
+        // Search functionality
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+
+            if (query.length > 0) {
+                const filteredProducts = sampleProducts.filter(product =>
+                    product.name.toLowerCase().includes(query)
+                );
+
+                displaySearchResults(filteredProducts);
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        function displaySearchResults(products) {
+            searchResults.innerHTML = '';
+
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'search-item';
+                item.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${product.name}</div>
+                    </div>
+                    <div class="item-price">$${product.price.toFixed(2)}</div>
+                `;
+
+                item.addEventListener('click', () => addToCart(product));
+                searchResults.appendChild(item);
+            });
+        }
+
+        function addToCart(product) {
+            if (!selectedItems.find(item => item.id === product.id)) {
+                selectedItems.push(product);
+                updateSelectedItems();
+                updateTotal();
+            }
+
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+        }
+
+        function removeFromCart(productId) {
+            selectedItems = selectedItems.filter(item => item.id !== productId);
+            updateSelectedItems();
+            updateTotal();
+        }
+
+        function updateSelectedItems() {
+            if (selectedItems.length === 0) {
+                selectedItemsList.innerHTML = `
+                    <div class="empty-cart">
+                        <p>No items selected yet</p>
+                        <p>Search and add products to your cart</p>
+                    </div>
+                `;
+            } else {
+                selectedItemsList.innerHTML = selectedItems.map(item => `
+                    <div class="selected-item">
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price.toFixed(2)}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                `).join('');
+            }
+
+            updateBuyButton();
+        }
+
+        function updateTotal() {
+            const total = selectedItems.reduce((sum, item) => sum + item.price, 0);
+            totalAmount.textContent = total.toFixed(2);
+        }
+
+        function updateBuyButton() {
+            buyBtn.disabled = selectedItems.length === 0 || !photoTaken;
+        }
+
+        // 📷 Camera functionality
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("❌ Cannot access camera:", err);
+                alert("Camera access is required to take a photo.");
+            }
+        }
+
+        function captureImage() {
+            const context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.style.display = "block";
+
+            photoTaken = true;
+            updateBuyButton();
+
+            const imageData = canvas.toDataURL("image/jpeg");
+            console.log("📸 Captured Image Data:", imageData.substring(0, 100) + "..."); // preview snippet
+        }
+
+        takePictureBtn.addEventListener("click", captureImage);
+
+        // 🛒 Buy button
+        // === FRONTEND SCRIPT (inside <script> tag in HTML) ===
+
+buyBtn.addEventListener('click', async function () {
+    if (selectedItems.length > 0 && photoTaken) {
+        const imageData = canvas.toDataURL("image/jpeg");
+        const purchaseData = {
+            items: selectedItems,
+            total: selectedItems.reduce((sum, item) => sum + item.price, 0),
+            timestamp: new Date().toISOString(),
+            image: imageData
+        };
+
+        try {
+            const response = await fetch("http://localhost:5000/api/purchase", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(purchaseData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("✅ Purchase completed! Saved under: " + result.photo_id);
+            } else {
+                alert("❌ Error: " + result.message);
+            }
+        } catch (err) {
+            console.error("❌ Backend error:", err);
+        }
+
+        // Reset
+        selectedItems = [];
+        photoTaken = false;
+        updateSelectedItems();
+        updateTotal();
+        canvas.style.display = "none";
+        updateBuyButton();
+    }
+});
+        // Hide search on outside click
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
